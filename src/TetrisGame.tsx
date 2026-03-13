@@ -22,6 +22,10 @@ import {
   particleSystem,
   createExplosionParticles,
 } from './particles';
+import {
+  soundManager,
+  initAudio,
+} from './sound';
 
 // 方块组件
 function Block({ 
@@ -149,6 +153,31 @@ export default function TetrisGame() {
   const [particles, setParticles] = useState<Particle[]>([]);
   const gameLoopRef = useRef<number | null>(null);
   const lastTickRef = useRef<number>(0);
+  const prevLevelRef = useRef<number>(1);
+  const prevLinesRef = useRef<number>(0);
+  const prevGameOverRef = useRef<boolean>(false);
+
+  // 监听游戏状态变化，播放音效
+  useEffect(() => {
+    // 检测等级提升
+    if (gameState.level > prevLevelRef.current) {
+      soundManager.playLevelUp();
+      prevLevelRef.current = gameState.level;
+    }
+    
+    // 检测消除行数
+    const linesCleared = gameState.lines - prevLinesRef.current;
+    if (linesCleared > 0) {
+      soundManager.playLineClear(linesCleared);
+      prevLinesRef.current = gameState.lines;
+    }
+    
+    // 检测游戏结束
+    if (gameState.gameOver && !prevGameOverRef.current && gameState.isPlaying === false) {
+      soundManager.playGameOver();
+    }
+    prevGameOverRef.current = gameState.gameOver;
+  }, [gameState]);
 
   // 游戏循环
   const gameLoop = useCallback((timestamp: number) => {
@@ -220,6 +249,22 @@ export default function TetrisGame() {
     };
   }, [gameLoop]);
 
+  // 初始化音频（用户首次交互时）
+  const handleUserInteraction = useCallback(() => {
+    initAudio();
+    window.removeEventListener('click', handleUserInteraction);
+    window.removeEventListener('keydown', handleUserInteraction);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('click', handleUserInteraction);
+    window.addEventListener('keydown', handleUserInteraction);
+    return () => {
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
+    };
+  }, [handleUserInteraction]);
+
   // 键盘控制
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -236,7 +281,16 @@ export default function TetrisGame() {
       const isEnter = key === 'Enter';
 
       if (isPause) {
-        setGameState(prev => togglePause(prev));
+        setGameState(prev => {
+          const newState = togglePause(prev);
+          // 根据暂停/恢复状态播放音效
+          if (newState.isPaused) {
+            soundManager.playPause();
+          } else {
+            soundManager.playResume();
+          }
+          return newState;
+        });
         return;
       }
 
@@ -244,6 +298,7 @@ export default function TetrisGame() {
         if (isEnter || isHardDrop) {
           setGameState(startGame());
           particleSystem.clear();
+          soundManager.playStart();
         }
         return;
       }
@@ -251,25 +306,31 @@ export default function TetrisGame() {
       if (isLeft) {
         e.preventDefault();
         setGameState(prev => movePiece(prev, -1, 0));
+        soundManager.playMove();
       } else if (isRight) {
         e.preventDefault();
         setGameState(prev => movePiece(prev, 1, 0));
+        soundManager.playMove();
       } else if (isDown) {
         e.preventDefault();
         setGameState(prev => {
           const moved = movePiece(prev, 0, 1);
           return { ...moved, score: moved.score + 1 };
         });
+        soundManager.playDrop();
       } else if (isRotateCW) {
         e.preventDefault();
         setGameState(prev => rotatePiece(prev, 'cw'));
+        soundManager.playRotate();
       } else if (isRotateCCW) {
         e.preventDefault();
         setGameState(prev => rotatePiece(prev, 'ccw'));
+        soundManager.playRotate();
       } else if (isHardDrop) {
         e.preventDefault();
         setGameState(prev => {
           const dropped = hardDrop(prev);
+          soundManager.playHardDrop();
           return lockPiece(dropped);
         });
       }
@@ -434,6 +495,11 @@ export default function TetrisGame() {
               onClick={() => {
                 setGameState(startGame());
                 particleSystem.clear();
+                // 重置音效跟踪 refs
+                prevLevelRef.current = 1;
+                prevLinesRef.current = 0;
+                prevGameOverRef.current = false;
+                soundManager.playStart();
               }}
               style={{
                 width: '100%',
