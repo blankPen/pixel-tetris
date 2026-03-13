@@ -1,5 +1,5 @@
 // 俄罗斯方块游戏主组件
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { 
   type GameState, 
   type TetrominoType, 
@@ -27,8 +27,8 @@ import {
   initAudio,
 } from './sound';
 
-// 方块组件
-function Block({ 
+// 方块组件 - 使用 memo 避免不必要的重渲染
+const Block = memo(function Block({ 
   type, 
   x, 
   y, 
@@ -65,10 +65,10 @@ function Block({
       }}
     />
   );
-}
+});
 
-// 粒子渲染组件
-function ParticleRenderer({ 
+// 粒子渲染组件 - 使用 memo 优化
+const ParticleRenderer = memo(function ParticleRenderer({ 
   particles,
   blockSize = GAME_CONFIG.BLOCK_SIZE,
 }: {
@@ -98,10 +98,10 @@ function ParticleRenderer({
       })}
     </div>
   );
-}
+});
 
-// 下一个方块预览
-function NextPiecePreview({ 
+// 下一个方块预览 - 使用 memo 优化
+const NextPiecePreview = memo(function NextPiecePreview({ 
   pieceType,
   size = 100,
 }: { 
@@ -145,7 +145,7 @@ function NextPiecePreview({
       )}
     </div>
   );
-}
+});
 
 // 主游戏组件
 export default function TetrisGame() {
@@ -362,44 +362,6 @@ export default function TetrisGame() {
       color: PIXEL_COLORS.text,
       padding: '20px',
     }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        
-        * {
-          image-rendering: pixelated;
-        }
-        
-        @keyframes pixelGlow {
-          0%, 100% { box-shadow: 0 0 10px currentColor; }
-          50% { box-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
-        }
-        
-        @keyframes blink {
-          0%, 50% { opacity: 1; }
-          51%, 100% { opacity: 0; }
-        }
-        
-        .pixel-btn {
-          font-family: 'Press Start 2P', monospace;
-          background: linear-gradient(180deg, #444 0%, #222 100%);
-          border: 4px solid #666;
-          color: #fff;
-          padding: 15px 20px;
-          font-size: 12px;
-          cursor: pointer;
-          image-rendering: pixelated;
-          transition: all 0.1s;
-        }
-        
-        .pixel-btn:hover {
-          background: linear-gradient(180deg, #555 0%, #333 100%);
-          border-color: #888;
-        }
-        
-        .pixel-btn:active {
-          transform: translateY(2px);
-        }
-      `}</style>
       
       <div style={{
         display: 'flex',
