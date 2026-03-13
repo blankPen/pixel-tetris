@@ -16,7 +16,7 @@ export enum TetrominoType {
 
 // 方块形状定义（使用 0/1 矩阵表示）
 // 每个方块有 4 种旋转状态
-export const TETROMINO_SHAPES: Record<TetrominoType, boolean[][][]> = {
+export const TETROMINO_SHAPES: Record<TetrominoType, number[][][]> = {
   [TetrominoType.I]: [
     [
       [0, 0, 0, 0],
@@ -243,7 +243,7 @@ export const BOARD_HEIGHT = 20;
 // 方块接口
 export interface Tetromino {
   type: TetrominoType | SpecialBlockType;
-  shape: boolean[][];
+  shape: number[][];
   rotation: number; // 0-3 表示四种旋转状态
   x: number;       // 方块左上角在棋盘上的 x 坐标
   y: number;       // 方块左上角在棋盘上的 y 坐标

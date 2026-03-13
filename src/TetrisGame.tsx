@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { createGameEngine, GameEngine, GameStatus, BOARD_WIDTH, BOARD_HEIGHT } from './game';
+import { createGameEngine, GameStatus, BOARD_WIDTH, BOARD_HEIGHT } from './game';
 
 function TetrisGame() {
   const [game] = useState(() => createGameEngine());
@@ -13,7 +13,7 @@ function TetrisGame() {
   const [lines, setLines] = useState(0);
   const [status, setStatus] = useState(GameStatus.IDLE);
   const [nextPiece, setNextPiece] = useState<string | null>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
 
   // 更新游戏状态到 React 状态
   const syncState = useCallback(() => {

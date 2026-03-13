@@ -5,8 +5,6 @@
 
 import {
   Tetromino,
-  TetrominoType,
-  SpecialBlockType,
   GameStatus,
   BOARD_WIDTH,
   BOARD_HEIGHT,
@@ -37,7 +35,6 @@ export interface GameState {
 export class GameEngine {
   private state: GameState;
   private lastDropTime: number = 0;
-  private isPaused: boolean = false;
   
   constructor() {
     this.state = this.getInitialState();
