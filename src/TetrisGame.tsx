@@ -27,24 +27,26 @@ import {
   initAudio,
 } from './sound';
 
-// 方块组件 - 使用 memo 避免不必要的重渲染
-const Block = memo(function Block({ 
-  type, 
-  x, 
-  y, 
+// 像素块组件 - 简洁的像素风格方块
+const PixelBlock = memo(function PixelBlock({
+  type,
+  x,
+  y,
   size = GAME_CONFIG.BLOCK_SIZE,
   isGhost = false,
-}: { 
-  type: TetrominoType | null; 
-  x: number; 
+}: {
+  type: TetrominoType | null;
+  x: number;
   y: number;
   size?: number;
   isGhost?: boolean;
 }) {
   if (!type) return null;
-  
-  const color = PIXEL_COLORS[type];
-  
+
+  const colorObj = PIXEL_COLORS[type];
+  const color = colorObj.main;
+  const darkColor = colorObj.dark;
+
   return (
     <div
       style={{
@@ -54,18 +56,21 @@ const Block = memo(function Block({
         width: size,
         height: size,
         backgroundColor: isGhost ? 'transparent' : color,
-        border: isGhost 
+        border: isGhost
           ? `2px dashed ${color}40`
-          : `3px solid ${color}80`,
-        boxShadow: isGhost 
-          ? 'none' 
-          : `inset 0 0 ${size / 3}px ${color}60, 0 0 ${size / 4}px ${color}40`,
+          : `2px solid ${darkColor}`,
+        boxShadow: isGhost
+          ? 'none'
+          : `0 0 ${size * 0.25}px ${color}`,
         imageRendering: 'pixelated',
         transition: 'none',
       }}
     />
   );
 });
+
+// 兼容旧的 Block 组件名称
+const Block = PixelBlock;
 
 // 粒子渲染组件 - 使用 memo 优化
 const ParticleRenderer = memo(function ParticleRenderer({ 
@@ -101,18 +106,21 @@ const ParticleRenderer = memo(function ParticleRenderer({
 });
 
 // 下一个方块预览 - 使用 memo 优化
-const NextPiecePreview = memo(function NextPiecePreview({ 
+const NextPiecePreview = memo(function NextPiecePreview({
   pieceType,
   size = 100,
-}: { 
+}: {
   pieceType: TetrominoType | null;
   size?: number;
 }) {
   if (!pieceType) return null;
-  
+
   const shape = getPieceShape(pieceType, 0);
+  const colorObj = PIXEL_COLORS[pieceType];
+  const color = colorObj.main;
+  const darkColor = colorObj.dark;
   const blockSize = size / 4;
-  
+
   return (
     <div style={{
       width: size,
@@ -121,23 +129,25 @@ const NextPiecePreview = memo(function NextPiecePreview({
       border: `2px solid ${PIXEL_COLORS.gridLine}`,
       position: 'relative',
       imageRendering: 'pixelated',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     }}>
       {shape.map((row, rowIndex) =>
         row.map((cell, colIndex) => {
           if (!cell) return null;
-          const color = PIXEL_COLORS[pieceType];
           return (
             <div
               key={`${rowIndex}-${colIndex}`}
               style={{
                 position: 'absolute',
-                left: (colIndex + 0.5) * blockSize,
-                top: (rowIndex + 0.5) * blockSize,
+                left: (colIndex + 0.5) * blockSize - (blockSize - 2) / 2 + size * 0.1,
+                top: (rowIndex + 0.5) * blockSize - (blockSize - 2) / 2 + size * 0.15,
                 width: blockSize - 2,
                 height: blockSize - 2,
                 backgroundColor: color,
-                border: `2px solid ${color}80`,
-                boxShadow: `inset 0 0 ${blockSize / 4}px ${color}60`,
+                border: `2px solid ${darkColor}`,
+                boxShadow: `0 0 ${blockSize * 0.25}px ${color}`,
               }}
             />
           );
@@ -360,94 +370,58 @@ export default function TetrisGame() {
       alignItems: 'center',
       fontFamily: '"Press Start 2P", "Courier New", monospace',
       color: PIXEL_COLORS.text,
-      padding: '20px',
+      padding: '40px',
     }}>
-      
-      <div style={{
+
+      {/* 游戏机外壳 */}
+      <div className="game-console" style={{
         display: 'flex',
-        gap: '40px',
+        gap: '30px',
         alignItems: 'flex-start',
       }}>
-        {/* 左侧信息面板 */}
+        {/* 左侧信息面板 - 游戏机风格 */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '20px',
-          minWidth: '180px',
+          gap: '15px',
+          minWidth: '160px',
         }}>
+          {/* LED 指示灯 */}
           <div style={{
-            backgroundColor: PIXEL_COLORS.gridBg,
-            border: `4px solid ${PIXEL_COLORS.gridLine}`,
-            padding: '15px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '10px',
           }}>
-            <div style={{
-              color: PIXEL_COLORS.textDim,
-              fontSize: '10px',
-              marginBottom: '8px',
-            }}>
-              SCORE
-            </div>
-            <div style={{
-              color: PIXEL_COLORS.score,
-              fontSize: '16px',
-              textShadow: `0 0 10px ${PIXEL_COLORS.score}`,
-            }}>
+            <div className={`led-indicator ${gameState.isPlaying && !gameState.isPaused ? 'active' : gameState.isPaused ? 'paused' : ''}`} />
+            <span style={{ fontSize: '8px', color: PIXEL_COLORS.textDim }}>
+              {gameState.isPlaying ? (gameState.isPaused ? 'PAUSED' : 'PLAYING') : 'READY'}
+            </span>
+          </div>
+
+          <div className="info-panel">
+            <div className="panel-label">SCORE</div>
+            <div className="panel-value score">
               {gameState.score.toString().padStart(6, '0')}
             </div>
           </div>
-          
-          <div style={{
-            backgroundColor: PIXEL_COLORS.gridBg,
-            border: `4px solid ${PIXEL_COLORS.gridLine}`,
-            padding: '15px',
-          }}>
-            <div style={{
-              color: PIXEL_COLORS.textDim,
-              fontSize: '10px',
-              marginBottom: '8px',
-            }}>
-              LEVEL
-            </div>
-            <div style={{
-              color: PIXEL_COLORS.level,
-              fontSize: '16px',
-            }}>
+
+          <div className="info-panel">
+            <div className="panel-label">LEVEL</div>
+            <div className="panel-value level">
               {gameState.level}
             </div>
           </div>
-          
-          <div style={{
-            backgroundColor: PIXEL_COLORS.gridBg,
-            border: `4px solid ${PIXEL_COLORS.gridLine}`,
-            padding: '15px',
-          }}>
-            <div style={{
-              color: PIXEL_COLORS.textDim,
-              fontSize: '10px',
-              marginBottom: '8px',
-            }}>
-              LINES
-            </div>
-            <div style={{
-              color: PIXEL_COLORS.text,
-              fontSize: '16px',
-            }}>
+
+          <div className="info-panel">
+            <div className="panel-label">LINES</div>
+            <div className="panel-value lines">
               {gameState.lines}
             </div>
           </div>
-          
-          <div style={{
-            backgroundColor: PIXEL_COLORS.gridBg,
-            border: `4px solid ${PIXEL_COLORS.gridLine}`,
-            padding: '15px',
-          }}>
-            <div style={{
-              color: PIXEL_COLORS.textDim,
-              fontSize: '10px',
-              marginBottom: '8px',
-            }}>
-              NEXT
-            </div>
+
+          <div className="next-preview">
+            <div className="panel-label">NEXT</div>
             <NextPiecePreview pieceType={gameState.nextPiece} />
           </div>
           

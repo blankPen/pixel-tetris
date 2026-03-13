@@ -42,29 +42,61 @@ export const TETROMINO_SHAPES: Record<TetrominoType, boolean[][]> = {
   ],
 };
 
+// 方块颜色类型
+type BlockColors = {
+  main: string;
+  dark: string;
+  glow: string;
+};
+
 // 像素风格调色板 - 精致复古霓虹主题
-export const PIXEL_COLORS = {
-  // 方块颜色 - 精致复古霓虹配色
-  I: '#00e5ff', // 青色霓虹
-  J: '#3d5afe', // 靛蓝色
-  L: '#ff6d00', // 橙色霓虹
-  O: '#ffea00', // 明黄色
-  S: '#00e676', // 翠绿色
-  T: '#d500f9', // 紫色霓虹
-  Z: '#ff1744', // 红色霓虹
-  
+export const PIXEL_COLORS: Record<TetrominoType, BlockColors> & {
+  background: string;
+  gridBg: string;
+  gridLine: string;
+  consoleBg: string;
+  consoleBorder: string;
+  consoleScreen: string;
+  text: string;
+  textDim: string;
+  accent: string;
+  accentGlow: string;
+  score: string;
+  level: string;
+  particleWhite: string;
+  particleGold: string;
+  particleSilver: string;
+  particleRainbow: string[];
+  lineClear: string[];
+  flash: string;
+} = {
+  // 方块颜色 - 复古霓虹渐变配色 (主色, 渐变暗色)
+  I: { main: '#00FFFF', dark: '#00CCCC', glow: '#00FFFF' },  // 青色霓虹
+  J: { main: '#0066FF', dark: '#0044CC', glow: '#3388FF' },  // 蓝色霓虹
+  L: { main: '#FF6600', dark: '#CC4400', glow: '#FF8833' },  // 橙色霓虹
+  O: { main: '#FFFF00', dark: '#CCCC00', glow: '#FFFF66' },  // 黄色霓虹
+  S: { main: '#00FF00', dark: '#00CC00', glow: '#66FF66' },  // 绿色霓虹
+  T: { main: '#9900FF', dark: '#6600CC', glow: '#AA44FF' },  // 紫色霓虹
+  Z: { main: '#FF0000', dark: '#CC0000', glow: '#FF4444' },  // 红色霓虹
+
   // 背景色 - 深色复古风
   background: '#090912',
   gridBg: '#0d0d18',
   gridLine: '#1a1a2e',
-  
+
+  // 游戏机外壳颜色
+  consoleBg: '#1a1a2e',
+  consoleBorder: '#16213e',
+  consoleScreen: '#0a0a0a',
+
   // UI 颜色
   text: '#e8e8f0',
   textDim: '#5c5c7a',
   accent: '#f50057', // 霓虹粉
+  accentGlow: 'rgba(245, 0, 87, 0.4)',
   score: '#00e676',
   level: '#ffab00',
-  
+
   // 粒子颜色
   particleWhite: '#ffffff',
   particleGold: '#ffd700',
@@ -72,12 +104,12 @@ export const PIXEL_COLORS = {
   particleRainbow: [
     '#ff1744', '#ff6d00', '#ffea00', '#00e676', '#00b0ff', '#d500f9', '#ff4081',
   ],
-  
+
   // 消除特效颜色
   lineClear: [
     '#00e5ff', '#00e676', '#ffea00', '#ff6d00', '#d500f9', '#ff1744'
   ],
-  
+
   // 屏幕震动颜色
   flash: '#ffffff',
 } as const;
