@@ -42,35 +42,44 @@ export const TETROMINO_SHAPES: Record<TetrominoType, boolean[][]> = {
   ],
 };
 
-// 像素风格调色板
+// 像素风格调色板 - 精致复古霓虹主题
 export const PIXEL_COLORS = {
-  // 方块颜色 (8-bit 风格)
-  I: '#00f5ff', // 青色
-  J: '#0000ff', // 蓝色
-  L: '#ffaa00', // 橙色
-  O: '#ffff00', // 黄色
-  S: '#00ff00', // 绿色
-  T: '#aa00ff', // 紫色
-  Z: '#ff0000', // 红色
+  // 方块颜色 - 精致复古霓虹配色
+  I: '#00e5ff', // 青色霓虹
+  J: '#3d5afe', // 靛蓝色
+  L: '#ff6d00', // 橙色霓虹
+  O: '#ffea00', // 明黄色
+  S: '#00e676', // 翠绿色
+  T: '#d500f9', // 紫色霓虹
+  Z: '#ff1744', // 红色霓虹
   
-  // 背景色
-  background: '#0a0a0f',
-  gridBg: '#12121a',
-  gridLine: '#1a1a25',
+  // 背景色 - 深色复古风
+  background: '#090912',
+  gridBg: '#0d0d18',
+  gridLine: '#1a1a2e',
   
   // UI 颜色
-  text: '#ffffff',
-  textDim: '#888899',
-  accent: '#ff00ff',
-  score: '#00ffaa',
-  level: '#ffaa00',
+  text: '#e8e8f0',
+  textDim: '#5c5c7a',
+  accent: '#f50057', // 霓虹粉
+  score: '#00e676',
+  level: '#ffab00',
   
   // 粒子颜色
   particleWhite: '#ffffff',
   particleGold: '#ffd700',
+  particleSilver: '#c0c0c0',
   particleRainbow: [
-    '#ff0000', '#ff7700', '#ffff00', '#00ff00', '#00ffff', '#0077ff', '#ff00ff',
+    '#ff1744', '#ff6d00', '#ffea00', '#00e676', '#00b0ff', '#d500f9', '#ff4081',
   ],
+  
+  // 消除特效颜色
+  lineClear: [
+    '#00e5ff', '#00e676', '#ffea00', '#ff6d00', '#d500f9', '#ff1744'
+  ],
+  
+  // 屏幕震动颜色
+  flash: '#ffffff',
 } as const;
 
 // 游戏状态
@@ -102,7 +111,7 @@ export interface Particle {
   maxLife: number;
   color: string;
   size: number;
-  type: 'explosion' | 'trail' | 'glow' | 'sparkle';
+  type: 'explosion' | 'trail' | 'glow' | 'sparkle' | 'debris' | 'spark' | 'halo';
 }
 
 // 特殊方块类型

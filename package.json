@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "publish:preview": "bash DEPLOY.sh"
   },
   "dependencies": {
     "react": "^19.2.4",
@@ -15,6 +16,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@midscene/web": "^1.5.4",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

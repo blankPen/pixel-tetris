@@ -1,111 +1,184 @@
+/* 俄罗斯方块 - 精致像素风格 CSS */
+
+/* 引入像素字体 */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  /* 精致像素风格调色板 */
+  --bg-primary: #090912;
+  --bg-secondary: #0d0d18;
+  --grid-line: #1a1a2e;
+  --text-primary: #e8e8f0;
+  --text-dim: #5c5c7a;
+  --accent: #f50057;
+  --accent-glow: rgba(245, 0, 87, 0.4);
+  --score: #00e676;
+  --level: #ffab00;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
-  margin: 0;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  image-rendering: pixelated;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+/* 复古像素背景图案 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    /* 星星点缀 */
+    radial-gradient(2px 2px at 20px 30px, #ffffff20, transparent),
+    radial-gradient(2px 2px at 40px 70px, #ffffff15, transparent),
+    radial-gradient(1px 1px at 90px 40px, #ffffff20, transparent),
+    radial-gradient(2px 2px at 130px 80px, #ffffff10, transparent),
+    radial-gradient(1px 1px at 160px 120px, #ffffff15, transparent),
+    /* 扫描线效果 */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.1) 2px,
+      rgba(0, 0, 0, 0.1) 4px
+    );
+  pointer-events: none;
+  z-index: -1;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+/* 像素按钮 */
+.pixel-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  padding: 15px 20px;
+  background: linear-gradient(180deg, #2a2a3e 0%, #1a1a28 100%);
+  border: 3px solid var(--accent);
+  color: var(--text-primary);
+  cursor: pointer;
+  position: relative;
+  text-transform: uppercase;
+  box-shadow: 
+    0 0 10px var(--accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.1s;
+}
+
+.pixel-btn:hover {
+  background: linear-gradient(180deg, #3a3a4e 0%, #2a2a38 100%);
+  box-shadow: 
+    0 0 20px var(--accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.pixel-btn:active {
+  transform: translateY(1px);
+  box-shadow: 
+    0 0 5px var(--accent-glow),
+    inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* 闪烁动画 - 游戏结束 */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* 像素发光动画 */
+@keyframes pixelGlow {
+  0%, 100% { 
+    text-shadow: 0 0 10px currentColor;
+  }
+  50% { 
+    text-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
   }
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+
+/* 脉冲动画 */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* 震动动画 - 用于消除时 */
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5px, -5px); }
+  20% { transform: translate(5px, -5px); }
+  30% { transform: translate(-5px, 5px); }
+  40% { transform: translate(5px, 5px); }
+  50% { transform: translate(-3px, -3px); }
+  60% { transform: translate(3px, -3px); }
+  70% { transform: translate(-3px, 3px); }
+  80% { transform: translate(3px, 3px); }
+  90% { transform: translate(-1px, -1px); }
+}
+
+/* 渐变背景动画 */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 粒子闪烁 */
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* 消除行高亮 */
+.line-clear {
+  animation: lineFlash 0.3s ease-out;
+}
+
+@keyframes lineFlash {
+  0% { 
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+  }
+  100% { 
+    background-color: transparent;
+    box-shadow: none;
   }
 }
-p {
-  margin: 0;
+
+/* 滚动条自定义样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+::-webkit-scrollbar-thumb {
+  background: var(--grid-line);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* 选中文字颜色 */
+::selection {
+  background: var(--accent);
+  color: white;
 }
